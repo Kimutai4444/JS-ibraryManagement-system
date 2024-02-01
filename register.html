@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Page</title>
+    <link rel="stylesheet" href="login.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="image">
+            <img src="assets/images/bgibrary.webp">
+        </div>
+        <div class="login-credentials">
+            <div class="credentials">
+                <img src="assets/images/imagelogo.jpeg">
+                <h4>REGISTER</h4>
+                <div class="data">
+                    <label>Name</label>
+                    <input type="text" class="name input">
+                    <label>Username</label>
+                    <input type="text" class="username input">
+                    <label>Password</label>
+                    <input type="password" class="password input" autocomplete="false">
+                    <div class="login-remember">
+                        <div>
+
+                        </div>
+                        <button class="register" onclick="register()">Register</button>
+                    </div>
+                </div>
+
+            </div>
+            <div class="forgot">
+                <p>Have an account?<a href="login.html">Login here.</a></p>
+            </div>
+        </div>
+    </div>
+    <script>
+        function register() {
+                let name = document.querySelector(".name").value;
+                let username = document.querySelector(".username").value;
+                let password = document.querySelector(".password").value;
+                if (name && username && password) {
+
+                    let user = {
+                        Name: name,
+                        username: username,
+                        password: password,
+                    };
+                    localStorage.setItem("user", JSON.stringify(user));
+                    window.location.href = "login.html";
+                }
+        }
+       
+
+
+        // let url = "https://jsonplaceholder.typicode.com/posts";
+
+        // let xhr = new XMLHttpRequest();
+        // // xhr.open("GET", url);
+        // // xhr.onload = function (e) {
+        // //     let posts = JSON.parse(this.responseText);
+        // //     console.log(this.responseText);
+        // // }
+        // // xhr.send();
+
+        // document.querySelector(".register-btn").onclick = function (e) {
+        //     let username = document.querySelector(".username ");
+        //     let password = document.querySelector(".username");
+        //     let params = `userId=20&id=56&title=${username.value}&body=${password.value}`;
+        //     xhr.open("POST", url);
+        //     xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        //     xhr.onload = function (e) {
+        //         console.log(this.responseText);
+        //     }
+        //     xhr.send(params);
+        // }
+    </script>
+</body>
+
+</html>

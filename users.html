@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Users page</title>
+    <link rel="stylesheet" href="users.css">
+</head>
+<body>
+    <div class="header">
+        <div class="navbar">
+            <ul>
+                <li><a href="home.html">Books</a></li>
+                <li><a href="users.html">Users</a></li>
+                <li><a href="login.html">Log out</a></li>
+            </ul>
+        </div>
+    </div>
+        <div id="addUserSection"> 
+            <h3>Add User:</h3>
+            <label for="newUsername">Username:</label>
+            <input type="text" id="newUsername">
+            <button onclick="addUser()">Add User</button>
+        </div>
+    <table id="usersTable">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Borrowed books</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="usersTableBody">
+            <!-- Users will appear here -->
+        </tbody>
+    </table>
+</body>
+<script>
+         function isAuthenticated() {
+                let isLogedin = localStorage.getItem("logedin")
+                if (!isLogedin) {
+                    window.location.href = "login.html";
+                }
+            }
+            isAuthenticated();
+</script>
+    <script>
+        let users = [];
+
+        function addUser() {
+             let newUsername=document.getElementById("newUsername").value
+
+               if (newUsername && !users.some((user) => user.username === newUsername)) {
+                users.push({ username: newUsername, borrowedBooks: 0 });
+                localStorage.setItem("users",JSON.stringify(users));
+                displayUsers();
+                } else {
+                    alert("Enter username.");
+                }
+            }
+        function displayUsers() {
+            
+
+        let savedUsers=localStorage.getItem("users");
+
+
+            if(savedUsers){
+                users=JSON.parse(savedUsers)
+            }
+           let tableBody = document.getElementById("usersTableBody");
+            tableBody.innerHTML = "";
+            for (let i = 0; i < users.length; i++) {
+                tableBody.innerHTML += `
+            <tr>
+                <td>${users[i].username}</td>
+                <td>${users[i].borrowedBooks}</td>
+                <td>
+                    <button onclick="editUser(${i})">Edit User</button>
+                    <button onclick="deleteUser(${i})">Delete User</button>
+                </td>
+            </tr>`;
+
+            }
+        }
+
+       function deleteUser(index) {
+                users.splice(index, 1);
+                localStorage.setItem("users", JSON.stringify(users));
+                displayUsers();
+            }
+            deleteUser();
+        
+       function editUser(index) {
+                let newUsername = prompt("Enter the new username:");
+
+                if (newUsername) {
+                    if (!users.some((u) => u.username === newUsername)) {
+                        users[index].username = newUsername;
+                        displayUsers();
+                    } else {
+                        alert("Username is already taken. Please choose a different one.");
+                    }
+                } else {
+                    alert("Invalid username. Please try again.");
+                }
+            }
+
+
+            displayUsers()
+    </script>
+</body>
+</html>

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home page</title>
+    <link rel="stylesheet" href="home.css">
+</head>
+<body>
+    <div class="header">
+        <div class="navbar">
+            <ul>
+                <li><a href="home.html">Books</a></li>
+                <li><a href="users.html">Users</a></li>
+                <li><button class="log-out" onclick="logOut()">Log out</button></li>
+            </ul>
+        </div>
+    </div>
+        <div class="addBook">
+            <input type="text" id="bookTitle" placeholder="Enter book title">
+            <input type="number" id="totalBooks" placeholder="Enter books total">  
+            <button onclick="addBook()">Add Book</button>
+        </div>
+        <div class="categories">
+            <label>Users:</label>
+            <select id="userBorrow">
+            </select>
+            <label>Books:</label>
+            <select id="booksborrow">
+            </select>
+            <button class="borrowButton">Borrow</button>
+        </div>
+        <div class="searchcontainer">
+            <input type="text" class="searchbooks" placeholder="Search a book">
+            <button id="search-btn">Search</button>
+        </div>
+    <table id="bookTable">
+            <tr>
+                <th>Book Title</th>
+                <th>Total Books</th>
+                <th>Available Books</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="booksTable">
+            <!-- added books to appera here -->
+        </tbody>
+    </table>
+</body>
+<script>
+         function isAuthenticated() {
+                let isLogedin = localStorage.getItem("logedin")
+                if (!isLogedin) {
+                    window.location.href = "login.html";
+                }
+            }
+            isAuthenticated();
+</script>
+<script>
+    let books = [];
+    function addBook(){
+        let title = document.getElementById("bookTitle").value;
+        let total = parseInt(document.getElementById("totalBooks").value);
+
+         if (title && !isNaN(total) && total > 0) {
+            let book = { title, total, available: total,availableBooks:total };
+            books.push(book);
+
+            localStorage.setItem("books", JSON.stringify(books));
+            displayBooks();
+            
+        } else {
+            alert("Enter valid book details");
+
+        }
+    }
+
+    let searchbook=document.querySelector(".searchbooks");
+    searchbook.addEventListener("input",search);
+
+    function search(e){
+        let searched = [];
+        for (let i = 0; i < books.length; i++) {
+            if (books[i].title.startsWith(e.target.value)) {
+                searched.push(books[i]);
+            }
+        }
+        //console.log(searched);
+        displayBooks(searched);
+    }
+
+    let userslist=document.querySelector("#userBorrow");
+    let bookslist=document.querySelector("#booksborrow");
+    let borrowButton=document.querySelector(".borrowButton");
+    borrowButton.addEventListener("click",borrowBooks);
+    function borrowBooks(){
+        let borrow=[];
+        console.log(userslist.value,bookslist.value);
+        let bookIndex=0;
+        let userIndex=0;
+           let retrievedBooks = [];
+        let storedBooks = localStorage.getItem("books");
+        if (storedBooks) {
+            retrievedBooks = JSON.parse(storedBooks)
+        }
+
+        for(let i=0; i<retrievedBooks.length; i++){
+            if(retrievedBooks[i].title==bookslist.value){
+                bookIndex=i
+                break;  
+            
+            }
+        }
+
+        console.log(bookIndex);
+        let users = [];
+
+        let savedUsers = localStorage.getItem("users");
+
+
+        if (savedUsers) {
+            users = JSON.parse(savedUsers)
+        }
+        for(let j=0; j<users.length; j++){
+            if(users[j].username==userslist.value){
+                userIndex=j;
+                break;
+            }
+        }
+
+        console.log(userIndex);
+        retrievedBooks[bookIndex].availableBooks -= 1;
+
+        users[userIndex].borrowedBooks+=1;
+        localStorage.setItem("books",JSON.stringify(retrievedBooks));
+        localStorage.setItem("users",JSON.stringify(users));
+
+
+        displayBooks()
+
+    }
+
+    function editBook(index) {
+            let newTotal = parseInt(prompt("Enter the new total books:"));
+            if (!isNaN(newTotal) && newTotal >= 0) {
+                books[index].total = newTotal;
+                books[index].available = newTotal;
+            } else {
+                alert("Please enter a valid number for total books.");
+            }
+        }
+    function displayBooks(searchedBooks=[]) {
+            let retrievedBooks=[];
+            let storedBooks=localStorage.getItem("books");
+            if(storedBooks){
+                retrievedBooks=JSON.parse(storedBooks)
+            }
+
+            let availableBooks=searchedBooks.length>0?searchedBooks: retrievedBooks;
+            let tableBody = document.querySelector("#bookTable tbody");
+            tableBody.innerHTML = "";
+
+            console.log(availableBooks);
+
+            for (let i = 0; i < availableBooks.length; i++) {
+                tableBody.innerHTML += `
+                <tr>
+                    <td>${availableBooks[i].title}</td>
+                    <td>${availableBooks[i].total}</td>
+                    <td>${availableBooks[i].availableBooks}</td>
+                    <td>
+                        <button onclick="editBook(${i})">Edit</button>
+                        <button onclick="deleteBook(${i})">Delete</button>
+                    </td>
+                </tr>`;
+                bookslist.innerHTML += `<option>${availableBooks[i].title}</option>`;
+            }
+            displayUsers();
+        }
+           function displayUsers() {
+            let users=[];
+
+            let savedUsers = localStorage.getItem("users");
+
+
+                if (savedUsers) {
+                    users = JSON.parse(savedUsers)
+                }
+                for (let i = 0; i < users.length; i++) {
+                 userslist.innerHTML += `<option>${users[i].username}</option>`;
+                }
+            }
+    
+        function deleteBook(index) {
+            books.splice(index, 1);
+            displayBooks();
+        }
+
+
+        displayBooks();
+
+        //this will log out completely 
+        function logOut(){
+            localStorage.removeItem("logedin");
+            window.location.href="login.html"
+        }
+
+</script>
+</html>
